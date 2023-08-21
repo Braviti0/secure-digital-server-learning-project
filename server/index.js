@@ -19,6 +19,10 @@ const getOwnerBalance = (owner) => {
   return record.balance
 }
 
+app.get("/", (req, res) => {
+  res.send("Server is running"); // Sending a simple message for the root URL
+});
+
 app.get("/balance/:address", (req, res) => {
   const { address } = req.params;
   const balance = getOwnerBalance(address) || 0;
