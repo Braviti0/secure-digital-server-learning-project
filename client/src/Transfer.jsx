@@ -1,22 +1,23 @@
 import { useState } from "react";
 import server from "./server";
+import walletData from "../../records.json"; // Import the wallet data directly
 
 function Transfer({ address, setBalance, privateKey }) {
   const [sendAmount, setSendAmount] = useState("");
-  const [recipient, setRecipient] = useState("");
+  const [selectedRecipient, setSelectedRecipient] = useState("");
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
   async function transfer(evt) {
     evt.preventDefault();
-    
+
     try {
       const {
         data: { balance },
       } = await server.post(`send`, {
         sender: address,
         amount: parseInt(sendAmount),
-        recipient,
+        recipient: selectedRecipient,
       });
       setBalance(balance);
     } catch (ex) {
@@ -34,16 +35,22 @@ function Transfer({ address, setBalance, privateKey }) {
           placeholder="1, 2, 3..."
           value={sendAmount}
           onChange={setValue(setSendAmount)}
-        ></input>
+        />
       </label>
 
       <label>
         Recipient
-        <input
-          placeholder="Type an address, for example: 0x2"
-          value={recipient}
-          onChange={setValue(setRecipient)}
-        ></input>
+        <select
+          value={selectedRecipient}
+          onChange={setValue(setSelectedRecipient)}
+        >
+          <option value="">Select a recipient</option>
+          {walletData.map((wallet) => (
+            <option key={wallet.wallet} value={wallet.wallet}>
+              {wallet.wallet}
+            </option>
+          ))}
+        </select>
       </label>
 
       <input type="submit" className="button" value="Transfer" />
